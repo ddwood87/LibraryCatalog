@@ -3,6 +3,7 @@ package catalog.beans;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -17,7 +18,7 @@ public class Book {
 	@Id
 	int ISBN;
 	int title;
-	@OneToMany
+	@ElementCollection
 	List<String> authors;
 	String category;
 	final static List<String> CATEGORIES = new ArrayList<String>() {
