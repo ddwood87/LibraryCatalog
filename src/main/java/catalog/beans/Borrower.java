@@ -1,5 +1,7 @@
 package catalog.beans;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 
@@ -12,8 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 @Entity
 public class Borrower extends User {
-	@Autowired
-	@OneToMany
-	Transaction transaction;
+	@OneToMany(mappedBy="borrower")
+	List<Transaction> transactions;
 	int lateDays;
 }

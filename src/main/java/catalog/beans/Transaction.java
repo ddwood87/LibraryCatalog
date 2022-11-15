@@ -20,10 +20,8 @@ public class Transaction {
 	@GeneratedValue
 	int id;
 	boolean isOpen;
-	@Autowired
 	@ManyToOne
 	InventoryItem item;
-	@Autowired
 	@ManyToOne
 	Borrower borrower;
 	Date borrowDate;
