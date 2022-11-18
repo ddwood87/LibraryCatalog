@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Add New User</title>
+</head>
+<body>
+	<form th:object="${newUser}" th:action="@{/update/{id}(id=${newUser.id})}" method=POST>
+	
+		First Name: <input name="firstName" size="10" th:field="*{firstName}"> <br />
+		Last Name: <input name="lastName" size="10" th:field="*{lastName}"><br />
+		Phone Number: <input name="phone" size="20" th:field="*{phone}"><br />
+	
+		<input name="submit" type="submit" value="submit" />
+	</form>
+<a href="viewAll">View all Contacts</a>
+</body>
+</body>
+</html>
