@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 
@@ -18,8 +19,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -100,6 +104,7 @@ class TestUserController {
 			.andExpect(view().name("viewUsers.html"));
 		
 		deleteSomeUsers();
+		System.out.println("ViewAllTest-------------User Count: " + countUsers());
 	}
 
 	/**
@@ -111,6 +116,8 @@ class TestUserController {
 			.andExpect(status().isOk())
 			.andExpect(model().attribute("addOrEdit", "Add"))
 			.andExpect(view().name("userInfoForm.html"));
+		System.out.println("AddUserTest------------User Count: " + countUsers());
+
 	}
 
 	/**
@@ -135,6 +142,7 @@ class TestUserController {
 			.andExpect(view().name("userInfoForm.html"));
 		
 		deleteSomeUsers();
+		System.out.println("EditTest--------------User Count: " + countUsers());
 	}
 
 	/**
@@ -158,20 +166,41 @@ class TestUserController {
 		assertTrue(countUsers() == (count-1));
 		
 		deleteSomeUsers();
+		System.out.println("DELETEtest--------------User Count: " + countUsers());
+
 	}
 	@Test
 	void testCreateUser() throws Exception{
-		
 		User u = users.get(0);
 		
-		mockMvc.perform(post("/users/updateUser")
-				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-				.param("firstName", u.getFirstName())
-				.param("lastName", u.getLastName())
-				.param("phone", u.getPhone()))
+		//Convert a user to json
+		ObjectMapper mapper = new ObjectMapper();
+		String json = mapper.writeValueAsString(u);
+		
+		//Send json to controller with post method, collect result
+		MvcResult result = mockMvc.perform(post("/users/updateUser")
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.content(json)
+				.param("user", json))
+				//.param("id", Integer.toString(u.getId()))
+				//.param("firstName", u.getFirstName())
+				//.param("lastName", u.getLastName())
+				//.param("phone", u.getPhone()))
 			.andExpect(status().isOk())
-			.andExpect(view().name("userDetail.html"));
-		User found = userRepo.findOne(Example.of(u)).orElse(null);
-		assertTrue(found.equals(u));
+			.andExpect(view().name("userDetail.html"))
+			.andReturn();
+		
+		//Get model from response.
+		Map<String, Object> map = result.getModelAndView().getModel();
+		User saved = (User)map.get("user");
+		
+		//Check that response object is equal to source.
+		assertTrue(u.equals(saved));
+		assertTrue(saved.getId() != 0);
+		
+		userRepo.delete(saved);
+		System.out.println("CreateUserTest------------User Count: " + countUsers());
+
 	}
 }

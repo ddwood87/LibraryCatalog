@@ -2,9 +2,13 @@ package catalog.controller;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.FormatterRegistry;
+import org.springframework.ui.Model;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import catalog.beans.Book;
 import catalog.beans.InventoryItem;
+import catalog.beans.JsonToUserConverter;
 import catalog.beans.Transaction;
 import catalog.beans.User;
 
@@ -18,6 +22,7 @@ public class BeanConfiguration {
 	@Bean
 	public User user() {
 		User bean = new User();
+		
 		return bean;
 	}
 	@Bean

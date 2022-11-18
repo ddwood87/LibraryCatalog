@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import catalog.beans.User;
@@ -51,8 +53,10 @@ public class UserController {
 		return "userInfoForm.html";
 	}
 	//create
-	@GetMapping("/users/addNewUser")
+	@GetMapping({"/users/addNewUser", "/"})	//Remove "/" URL path. For development only.
 	public String addNewUser(Model model) {
+		User user = new User();
+		model.addAttribute("user", user);
 		model.addAttribute("addOrEdit", "Add");
 		return userInput(model);
 	}
@@ -71,6 +75,7 @@ public class UserController {
 	public String updateUser(@RequestParam User user, Model model) {
 		
 		user = userRepo.save(user);
+		model.addAttribute("user", user);
 		return userDetail(user.getId(), model);
 	}
 	
