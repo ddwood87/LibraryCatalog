@@ -34,7 +34,7 @@ public class UserController {
 	
 	public void setUserRepo(UserRepository userRepository) { userRepo = userRepository; }
 	
-	@GetMapping({"/users/viewAllUsers"})
+	@GetMapping({"/users/viewAllUsers", "/users"})
 	public String viewAllUsers(Model model) {
 		if(userRepo.findAll().isEmpty()) {
 			return addNewUser(model);
@@ -53,7 +53,7 @@ public class UserController {
 		return "userInfoForm.html";
 	}
 	//create
-	@GetMapping({"/users/addNewUser", "/"})	//Remove "/" URL path. For development only.
+	@GetMapping({"/users/addNewUser"})	
 	public String addNewUser(Model model) {
 		User user = new User();
 		model.addAttribute("user", user);
@@ -72,7 +72,7 @@ public class UserController {
 	}
 	
 	@PostMapping("/users/updateUser")
-	public String updateUser(@RequestParam User user, Model model) {
+	public String updateUser(@ModelAttribute User user, Model model) {
 		
 		user = userRepo.save(user);
 		model.addAttribute("user", user);
@@ -93,7 +93,8 @@ public class UserController {
 	@GetMapping("/users/userDetail/{id}")
 	public String userDetail(@PathVariable int id, Model model) {
 		User u = userRepo.findById(id).orElse(null);
-		
+		Class<? extends User> classType = u.getClass();
+		model.addAttribute("userClass", classType.getTypeName());
 		model.addAttribute("user", u);
 		return "userDetail.html";
 	}

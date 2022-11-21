@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Enter Book Info</title>
+<script>
+function addAuthorToList(){
+	let listElement = document.getElementById("authorList");
+	let inputString = document.getElementById("authorInput").value;
+	let optionElement = document.createElement("option");
+	optionElement.id = listElement.childElementCount;
+	optionElement.value = inputString;
+	optionElement.innerHTML = inputString;
+	listElement.appendChild(optionElement);
+}
+function removeSelectedAuthors(){
+	let listElement = document.getElementById("authorList");
+	let selected = listElement.selectedOptions;
+	for(let item of selected){
+		listElement.remove(item);
+	}
+}
+</script>
+</head>
+<body>
+<h1>Book Information</h1>
+<form  th:modelAttribute="book" th:object="${book}" action="/books/updateBook" method="post">
+	<input type="text" name="isbn" th:value="${book.isbn}"/><br/>
+	<label for="title">Title</label><br/>
+	<input type="text" name="title" th:field="${book.title}"/><br/>
+	<label for="category">Category</label><br/>
+	<select type="text" name="category" th:field="${book.category}">
+		<option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}"/>
+	</select><br/>
+	<label for="authors">Authors</label><br/>
+	<select multiple th:size="${book.authors.size()}" id="authorList" name="authors">
+		<option selected th:unless="empty" th:each="author : ${book.authors}" th:value="${author}"/>
+	</select><br/>
+	<input type="text" id="authorInput"/><br/>
+	<button type="button" id="addAuthor" onclick="addAuthorToList()">Add Author</button>
+	<button type="button" id="removeAuthor" onclick="removeSelectedAuthors()">Remove Selected</button>
+	<br/>
+	<input id="submitButton" type="submit" value="Update">
+</form>
+</body>
+</html>
