@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Library User Detail</title>
+</head>
+<body>
+<h1>User Details</h1>
+<table>
+	<tr>
+		<th><a href="users/editUser/{id}(id=${user.id})">Edit User</a></th>
+	</tr>
+	<tr>
+		<th>Library ID:</th>
+		<td th:text="${user.id}"></td>
+	</tr>
+	<tr>
+		<th>First Name:</th>
+		<td th:text="${user.firstName}"></td>
+	</tr>
+	<tr>
+		<th>Last Name:</th>
+		<td th:text="${user.lastName}"></td>
+	</tr>
+	<tr>
+		<th>Phone No.:</th>
+		<td th:text="${user.phone}"></td>
+	</tr>	
+</table>
+	<div th:if="${userClass} == 'Borrower'||${userClass} == 'Librarian'">
+		<button onclick="/users/viewBorrowerBag">View Your Books</button>
+	</div>
+	<div th:if="${userClass} == 'Librarian'">
+		<!-- Librarian tasks -->
+	</div>
+</body>
+</html>

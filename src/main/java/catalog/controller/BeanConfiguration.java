@@ -1,5 +1,7 @@
 package catalog.controller;
 
+import java.util.ArrayList;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
@@ -27,7 +29,7 @@ public class BeanConfiguration {
 	}
 	@Bean
 	public Book book() {
-		Book bean = new Book();
+		Book bean = new Book();		
 		return bean;
 	}
 	@Bean

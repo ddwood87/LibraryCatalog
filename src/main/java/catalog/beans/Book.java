@@ -8,20 +8,28 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 /**
  * @author dominicwood - ddwood2@dmacc.edu
  * CIS175 - Fall 2022
  * Nov 11, 2022
  */
 @Entity
+@Getter
+@Setter
+@AllArgsConstructor
 public class Book {
 	@Id
-	int ISBN;
-	int title;
+	String isbn;
+	String title;
 	@ElementCollection
 	List<String> authors;
 	String category;
-	final static List<String> CATEGORIES = new ArrayList<String>() {
+	public final static List<String> CATEGORIES = new ArrayList<String>() {
 		{	
 			add("Adventure"); 
 			add("Sci-Fi");
@@ -30,4 +38,8 @@ public class Book {
 			add("Other");
 		}
 	};
+	
+	public Book() {
+		this.authors = new ArrayList<String>();
+	}
 }

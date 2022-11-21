@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Library Book Detail</title>
+</head>
+<body>
+<h1>User Details</h1>
+<table>
+	<tr>
+		<th><a href="book/editBook/{isbn}(id=${user.isbn})">Edit Book</a></th>
+	</tr>
+	<tr>
+		<th>ISBN:</th>
+		<td th:text="${book.isbn}"></td>
+	</tr>
+	<tr>
+		<th>Title:</th>
+		<td th:text="${book.title}"></td>
+	</tr>
+	<tr>
+		<th>Category:</th>
+		<td th:text="${book.category}"></td>
+	</tr>
+	<tr th:each="author : ${book.authors}">
+		<th th:if="${author} == ${book.authors[0]}">Authors:</th>
+		<th th:unless="${author} == ${book.authors[0]}"/>
+		<td th:text="${author}"></td>
+	</tr>	
+</table>
+</body>
+</html>
