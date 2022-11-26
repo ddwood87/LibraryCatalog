@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:insert="fragments/fragments :: head"></head>
+<head>
+<title>Book Catalog</title>
+</head>
+<body>
+<nav th:replace="fragments/fragments :: navbar"></nav>
+	<h1>Book Catalog</h1>
+	<table>
+		<tr>
+			<th>ISBN</th>
+			<th>Title</th>
+			<th>Category</th>
+			<th>Authors</th>
+		</tr>
+		<tr th:each="book : ${books}" >
+			<td th:text="${book.isbn}"/>
+			<td th:text="${book.title}"/>
+			<td th:text="${book.category}"/>
+			<td>
+				<ul>
+					<li th:each="author : ${book.authors}" th:text="${author}">
+				</ul>
+			</td>
+			<td>
+				<a th:href="@{/books/editBook/{isbn}(isbn=${book.isbn})}">Edit</a>
+			</td>
+		</tr>
+	</table>
+	<a href="/books/addNewBook">Add New Book</a>
+</body>
+</html>

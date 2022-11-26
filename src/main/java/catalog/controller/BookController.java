@@ -22,27 +22,29 @@ import catalog.repository.BookRepository;
 @Controller
 public class BookController {
 	@Autowired
-	BookRepository bookRepo;
+	BookService bookService;
+	
 	@Autowired
 	User activeUser;
 	
 	//All users can currently access book controller
 	public BookController() {}
-	public BookController(BookRepository repo, User user) {
+	public BookController(BookService service, User user) {
 		activeUser = user;
-		bookRepo = repo;
+		bookService = service;
 	}
 	
-	public void setBookRepo(BookRepository bookRepository) {bookRepo = bookRepository;}
+	public void setBookService(BookService bookService) {this.bookService = bookService;}
 	
 	@GetMapping({"/books/viewAllBooks", "/"}) //Remove "/" URL path. For development only.
 	public String viewAllBooks(Model model) {
-		List<Book> books = bookRepo.findAll();
+		List<Book> books = bookService.findAllBooks();
+		
 		if(books.isEmpty()) {
 			return addNewBook(model);
 		}
 		model.addAttribute("books", books);
-		return "viewUsers.html";
+		return "viewBooks.html";
 	}
 	
 	public String userInput(Model model) {
@@ -64,10 +66,10 @@ public class BookController {
 		return userInput(model);
 	}
 	
-	@GetMapping("/books/editBook/{id}")
-	private String editBook(@PathVariable("id") String isbn, Model model) {
+	@GetMapping("/books/editBook/{isbn}")
+	private String editBook(@PathVariable("isbn") String isbn, Model model) {
 		model.addAttribute("addOrEdit", "Edit");
-		Book book = bookRepo.findById(isbn).orElse(null);
+		Book book = bookService.findByISBN(isbn);
 		if(book != null) {
 			model.addAttribute("book", book);
 		}
@@ -76,20 +78,20 @@ public class BookController {
 	
 	@PostMapping("/books/updateBook")
 	public String updateBook(@ModelAttribute Book book, Model model) {
-		book = bookRepo.save(book);
+		book = bookService.saveBook(book);
 		model.addAttribute("book", book);
 		return bookDetail(book.getIsbn(), model);
 	}
 	
 	@GetMapping("/books/deleteUser/{isbn}")
 	public String deleteBook(@PathVariable("isbn") String isbn, Model model) {
-		bookRepo.deleteById(isbn);
+		bookService.deleteByISBN(isbn);
 		return viewAllBooks(model);
 	}
 	
 	@GetMapping("/books/bookDetail/{isbn}")
 	public String bookDetail(@PathVariable String isbn, Model model) {
-		Book b = bookRepo.findById(isbn).orElse(null);
+		Book b = bookService.findByISBN(isbn);
 		model.addAttribute("book", b);
 		return "bookDetail.html";
 	}

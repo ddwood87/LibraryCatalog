@@ -29,7 +29,7 @@ public class BeanConfiguration {
 	}
 	@Bean
 	public Book book() {
-		Book bean = new Book();		
+		Book bean = new Book();
 		return bean;
 	}
 	@Bean
