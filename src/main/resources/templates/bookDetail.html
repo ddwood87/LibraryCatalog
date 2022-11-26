@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<head th:insert="fragments/fragments :: head"></head>
 <head>
-<meta charset="ISO-8859-1">
 <title>Library Book Detail</title>
 </head>
 <body>
-<h1>User Details</h1>
+<nav th:replace="fragments/fragments :: navbar"></nav>
+<h1>Book Details</h1>
 <table>
 	<tr>
-		<th><a href="book/editBook/{isbn}(id=${user.isbn})">Edit Book</a></th>
+		<th><a th:href="@{/books/editBook/{isbn}(isbn=${book.isbn})}">Edit Book</a></th>
 	</tr>
 	<tr>
 		<th>ISBN:</th>
@@ -28,5 +29,6 @@
 		<td th:text="${author}"></td>
 	</tr>	
 </table>
+<a href="/books/viewAllBooks">View All Books</a>
 </body>
 </html>

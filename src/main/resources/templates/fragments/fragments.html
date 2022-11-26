@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head">
+<meta charset="ISO-8859-1">
+<link rel="stylesheet" th:href="@{/css/site.css}"/>
+</head>
+<body>
+<nav th:fragment="navbar">
+<ul class="navList">
+	<li><a class="navItem" href="/users">Users</a></li>
+	<li><a class="navItem" href="/books">Books</a></li>
+	<li><a class="navItem" href="/">Inventory</a></li>
+	<li><a class="navItem" href="/">Transactions</a></li>
+</ul>
+</nav>
+</body>

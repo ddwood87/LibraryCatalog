@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<head th:insert="fragments/fragments :: head"></head>
 <head>
-<meta charset="ISO-8859-1">
 <title>Library User Detail</title>
 </head>
 <body>
+<nav th:replace="fragments/fragments :: navbar"></nav>
 <h1>User Details</h1>
 <table>
 	<tr>
-		<th><a href="users/editUser/{id}(id=${user.id})">Edit User</a></th>
+		<th><a th:href="@{/users/editUser/{id}(id=${user.id})}">Edit User</a></th>
 	</tr>
 	<tr>
 		<th>Library ID:</th>
@@ -27,7 +28,7 @@
 		<td th:text="${user.phone}"></td>
 	</tr>	
 </table>
-	<div th:if="${userClass} == 'Borrower'||${userClass} == 'Librarian'">
+	<div th:if="${userClass} == 'catalog.beans.Borrower' OR ${userClass} == 'catalog.beans.Librarian'">
 		<button onclick="/users/viewBorrowerBag">View Your Books</button>
 	</div>
 	<div th:if="${userClass} == 'Librarian'">

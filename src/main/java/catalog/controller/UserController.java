@@ -76,6 +76,7 @@ public class UserController {
 		
 		user = userRepo.save(user);
 		model.addAttribute("user", user);
+		
 		return userDetail(user.getId(), model);
 	}
 	

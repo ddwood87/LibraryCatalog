@@ -1,8 +1,12 @@
 package catalog.controller;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 
 import catalog.beans.JsonToUserConverter;
 
@@ -17,4 +21,5 @@ public class WebConfig implements WebMvcConfigurer {
 	public void addFormatters(FormatterRegistry registry) {
 		registry.addConverter(new JsonToUserConverter());
 	}
+	
 }
