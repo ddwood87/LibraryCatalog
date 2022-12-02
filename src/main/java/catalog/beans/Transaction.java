@@ -1,6 +1,7 @@
 package catalog.beans;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,22 +10,40 @@ import javax.persistence.ManyToOne;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+
 /**
  * @author dominicwood - ddwood2@dmacc.edu
  * CIS175 - Fall 2022
  * Nov 11, 2022
  */
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 public class Transaction {
+	
+	public Transaction(Borrower borrower, InventoryItem item) {
+		open = true;
+		this.item = item;
+		this.borrower = borrower;
+		borrowDate = LocalDate.now();
+		dueDate = borrowDate.plusDays(DAYS_TO_BORROW);
+	}
+	
 	@Id
 	@GeneratedValue
 	int id;
-	boolean isOpen;
+	boolean open;
 	@ManyToOne
 	InventoryItem item;
 	@ManyToOne
 	Borrower borrower;
-	Date borrowDate;
-	Date dueDate;
-	Date returnDate;
+	LocalDate borrowDate;
+	LocalDate dueDate;
+	LocalDate returnDate;
+	
+	static int DAYS_TO_BORROW = 14;
 }

@@ -26,6 +26,9 @@
 			<td>
 				<a th:href="@{/books/editBook/{isbn}(isbn=${book.isbn})}">Edit</a>
 			</td>
+			<td>
+				<a th:href="@{/inv/addNewItem/{isbn}(isbn=${book.isbn})}">Create Inventory Item</a>
+			</td>
 		</tr>
 	</table>
 	<a href="/books/addNewBook">Add New Book</a>

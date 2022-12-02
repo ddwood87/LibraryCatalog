@@ -31,6 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import catalog.beans.Librarian;
 import catalog.beans.User;
 import catalog.controller.UserController;
+import catalog.controller.UserService;
 import catalog.repository.UserRepository;
 
 /**
@@ -43,7 +44,7 @@ class TestUserController {
 	
 	MockMvc mockMvc;
 	@Autowired
-	UserRepository userRepo;
+	UserService userService;
 	@Autowired
 	ObjectMapper objectMapper;
 	Librarian admin;
@@ -73,20 +74,20 @@ class TestUserController {
 		}
 		admin = new Librarian();
 		admin.setAdmin(true);
-		mockMvc = MockMvcBuilders.standaloneSetup(new UserController(userRepo, admin)).build();
+		mockMvc = MockMvcBuilders.standaloneSetup(new UserController(userService)).build();
 	}
 	void saveSomeUsers() {
-		userRepo.saveAll(users);
+		userService.saveAllUsers(users);
 	}
 	void deleteSomeUsers() {
-		userRepo.deleteAll(users);
+		userService.deleteAllUsers(users);
 	}
 	int countUsers() {
-		return userRepo.findAll().size();
+		return userService.findAllUsers().size();
 	}
 	int getFirstId() {
 		Example<User> ex = Example.of(users.get(1));
-		User u = userRepo.findOne(ex).orElse(null);
+		User u = userService.findOneUser(ex);
 		return u.getId();
 	}
 	/**
@@ -130,7 +131,7 @@ class TestUserController {
 		//Get a valid id
 		int id = getFirstId();
 		//Get the user object with that id
-		User u = userRepo.findById(id).orElse(null);
+		User u = userService.findUserById(id);
 		
 		mockMvc.perform(get("/users/editUser/" + id))
 			.andExpect(status().isOk())
@@ -199,7 +200,7 @@ class TestUserController {
 		assertTrue(u.equals(saved));
 		assertTrue(saved.getId() != 0);
 		
-		userRepo.delete(saved);
+		userService.deleteUser(saved);
 		System.out.println("CreateUserTest------------User Count: " + countUsers());
 
 	}

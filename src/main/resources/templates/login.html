@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:insert="fragments/fragments :: head"></head>
+<head>
+<title>Library Catalog Login</title>
+</head>
+<body>
+<nav th:replace="fragments/fragments :: navbar"></nav>
+<form action="/users/login" method="post">
+	<label for="id">Library ID#:</label>
+	<input type="text" name="id"/>
+	<label for="password">Password:</label>
+	<input type="text" name="password"/>
+	<input type="submit" value="Login"/>
+</form>
+</body>
+</html>

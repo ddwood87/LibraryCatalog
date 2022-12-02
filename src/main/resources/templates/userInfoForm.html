@@ -16,7 +16,8 @@
 <body>
 <nav th:replace="fragments/fragments :: navbar"></nav>
 <h1>User Information</h1>
-<form  th:modelAttribute="user" th:object="${user}" action="/users/updateUser" method="post">
+<form th:modelAttribute="user" th:object="${user}" action="/users/updateUser" method="post">
+
 	<input type="hidden" name="id" th:value="${user.id}"/>
 	<label for="firstName">First Name</label>
 	<input type="text" name="firstName" th:field="${user.firstName}"/>

@@ -1,5 +1,20 @@
 @charset "ISO-8859-1";
 
-nav{
-	background-color: red;
+nav ul{
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	background-color: #fffcf9;
+	list-style: none;
+}
+nav ul li{
+	padding: 5px;
+	margin: 5px;
+	background-color: #774411;
+	border: 2px solid black;
+	border-radius: 5px;
+}
+nav ul li a {
+	text-decoration: none;
+	color: white;	
 }

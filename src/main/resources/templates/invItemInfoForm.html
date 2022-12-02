@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:insert="fragments/fragments :: head"></head>
+<head>
+<title>Inventory Items</title>
+</head>
+<body>
+<nav th:replace="fragments/fragments :: navbar"></nav>
+<h1>${addOrEdit} Inventory Item</h1>
+<table>
+	<tr>
+		<th><a th:href="@{/books/editBook/{isbn}(isbn=${book.isbn})}">Edit Book</a></th>
+	</tr>
+	<tr>
+		<th>ISBN:</th>
+		<td th:text="${book.isbn}"></td>
+	</tr>
+	<tr>
+		<th>Title:</th>
+		<td th:text="${book.title}"></td>
+	</tr>
+	<tr>
+		<th>Category:</th>
+		<td th:text="${book.category}"></td>
+	</tr>
+	<tr th:each="author : ${book.authors}">
+		<th th:if="${author} == ${book.authors[0]}">Authors:</th>
+		<th th:unless="${author} == ${book.authors[0]}"/>
+		<td th:text="${author}"></td>
+	</tr>	
+</table>
+<form action="/inv/confirmNewItem" method="post">
+	<input type="hidden" name="isbn" value="${book.isbn}"/>
+	<input type="submit" value="Add New Item"/>
+</form>
+</body>
+</html>
