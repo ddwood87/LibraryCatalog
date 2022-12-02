@@ -24,25 +24,22 @@ public class BookController {
 	@Autowired
 	BookService bookService;
 	
-	@Autowired
-	User activeUser;
-	
 	//All users can currently access book controller
 	public BookController() {}
-	public BookController(BookService service, User user) {
-		activeUser = user;
+	public BookController(BookService service) {
 		bookService = service;
 	}
 	
 	public void setBookService(BookService bookService) {this.bookService = bookService;}
 	
-	@GetMapping({"/books/viewAllBooks", "/"}) //Remove "/" URL path. For development only.
+	@GetMapping({"/books/viewAllBooks", "/books"})
 	public String viewAllBooks(Model model) {
 		List<Book> books = bookService.findAllBooks();
 		
 		if(books.isEmpty()) {
 			return addNewBook(model);
 		}
+		model.addAttribute("activeUser", UserService.getActiveUser());
 		model.addAttribute("books", books);
 		return "viewBooks.html";
 	}
@@ -59,7 +56,7 @@ public class BookController {
 	}
 	
 	@GetMapping({"/books/addNewBook"})	
-	private String addNewBook(Model model) {
+	public String addNewBook(Model model) {
 		Book book = new Book();
 		model.addAttribute("book", book);
 		model.addAttribute("addOrEdit", "Add");
@@ -67,7 +64,7 @@ public class BookController {
 	}
 	
 	@GetMapping("/books/editBook/{isbn}")
-	private String editBook(@PathVariable("isbn") String isbn, Model model) {
+	public String editBook(@PathVariable("isbn") String isbn, Model model) {
 		model.addAttribute("addOrEdit", "Edit");
 		Book book = bookService.findByISBN(isbn);
 		if(book != null) {
@@ -83,7 +80,7 @@ public class BookController {
 		return bookDetail(book.getIsbn(), model);
 	}
 	
-	@GetMapping("/books/deleteUser/{isbn}")
+	@GetMapping("/books/deleteBook/{isbn}")
 	public String deleteBook(@PathVariable("isbn") String isbn, Model model) {
 		bookService.deleteByISBN(isbn);
 		return viewAllBooks(model);

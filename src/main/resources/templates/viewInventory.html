@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:insert="fragments/fragments :: head"></head>
+<head>
+<title>Inventory Items</title>
+</head>
+<body>
+<nav th:replace="fragments/fragments :: navbar"></nav>
+<h1>Inventory Items</h1>
+<table>
+	<tr>
+		<th>Item ID:</th><th>ISBN</th><th>Title</th><th>Checked Out?</th>
+	</tr>
+	<tr th:each="item : ${items}">
+		<th th:text="${item.id}"/>
+		<th th:text="${item.book.isbn}"/>
+		<th th:text="${item.book.title}"/>
+		<th th:text="${item.checkedOut} ? 'Yes':'No'"/>
+	</tr>
+</table>
+</body>
+</html>
