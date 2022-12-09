@@ -6,15 +6,17 @@
 </head>
 <body>
 <nav th:replace="fragments/fragments :: navbar"></nav>
-	<form th:object="${newUser}" th:action="@{/update/{id}(id=${newUser.id})}" method=POST>
+	<form th:object="${newUser}" th:action="@{/users/updateUser}" onsubmit="function a(){return onsubmit();}" method=POST>
 	
-		First Name: <input name="firstName" size="10" th:field="*{firstName}"> <br />
-		Last Name: <input name="lastName" size="10" th:field="*{lastName}"><br />
-		Phone Number: <input name="phone" size="20" th:field="*{phone}"><br />
-	
-		<input name="submit" type="submit" value="submit" />
+		<label for="firstName">First Name: </label>
+		<input name="firstName" size="10" th:field="*{firstName}"/> <br/>
+		<label for="lastName">Last Name: </label>
+		<input name="lastName" size="10" th:field="*{lastName}"/><br/>
+		<label for="phone">Phone Number: </label>
+		<input name="phone" size="20" th:field="*{phone}"/><br/>
+		<input name="submit" type="submit" value="Submit" />
 	</form>
-<a href="viewAll">View all Contacts</a>
+<a href="/users/viewAllUsers">View all Contacts</a>
 </body>
 </body>
 </html>

@@ -2,15 +2,17 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:insert="fragments/fragments :: head"></head>
 <head>
-<title>${addOrEdit} User</title>
+<title th:text"${addOrEdit} User"></title>
 <script>
-	function borrowerCheck(){
-		let checkBox = document.getElementById("borrowerCheck");
-		if(checkBox.checked){
-			checkBox.checked = false;
-			
-		}
-	}
+function confirmPassword(){
+	let passElement = document.getElementById("password");
+	let confirmElement = document.getElementById("confirmPass");
+	if((passElement.text).equals(confirmElement.text)){ return true; }
+	else {return false;}
+}
+function onsubmit(){
+	return confirmPassword();
+}
 </script>
 </head>
 <body>
@@ -19,12 +21,24 @@
 <form th:modelAttribute="user" th:object="${user}" action="/users/updateUser" method="post">
 
 	<input type="hidden" name="id" th:value="${user.id}"/>
-	<label for="firstName">First Name</label>
-	<input type="text" name="firstName" th:field="${user.firstName}"/>
-	<label for="lastName">Last Name</label>
-	<input type="text" name="lastName" th:field="${user.lastName}"/>
-	<label for="phone">Phone #</label>
-	<input type="text" name="phone" th:field="${user.phone}"/>
+	<label for="userName">Username</label><br/>
+	<input type="text" name="userName" th:field="${user.userName}"/><br/>
+	<label for="firstName">First Name</label><br/>
+	<input type="text" name="firstName" th:field="${user.firstName}"/><br/>
+	<label for="lastName">Last Name</label><br/>
+	<input type="text" name="lastName" th:field="${user.lastName}"/><br/>
+	<label for="phone">Phone #</label><br/>
+	<input type="text" name="phone" th:field="${user.phone}"/><br/>
+	<label for="password">Enter a Password:</label><br/>
+	<input name="password" id="password" size="10"/><br/>
+	<label for="confirmPass">Confirm Password:</label><br/>
+	<input name="confirmPass" id="confirmPass" size="10"/><br/>
+		<input type="radio" name="userClass" value="Borrower" th:checked="${userClass}=='Borrower'"/>
+		<label for="radio">Borrower</label><br/>
+		<input type="radio" name="userClass" value="Librarian" th:checked="${userClass}=='Librarian' AND !${user.admin}"/>
+		<label for="radio">Librarian</label><br/>
+		<input type="radio" name="userClass" value="Admin" th:checked="${userClass}=='Librarian' AND ${user.admin}"/>
+		<label for="radio">Admin</label><br/>
 	<input id="submitButton" type="submit" value="Update">
 </form>
 </body>

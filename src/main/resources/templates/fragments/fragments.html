@@ -12,7 +12,7 @@
 	<li><a class="navItem" href="/inv">Inventory</a></li>
 	<li><a class="navItem" href="/tx">Transactions</a></li>
 	<li th:if="${activeUser}==null")><a class="navItem" href="/users/login">Login</a></li>
-	<li th:if="${activeUser}!=null")><a class="navItem" href="/users/userDetail/${activeUser.id}" th:text="${activeUser.firstName}"></a></li>
+	<li th:if="${activeUser}!=null")><a class="navItem" th:href="@{/users/userDetail/{id}(id=${activeUser.id})}" th:text="${activeUser.firstName}"></a></li>
 </ul>
 </nav>
 </body>

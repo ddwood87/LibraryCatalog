@@ -1,9 +1,18 @@
 package catalog.beans;
 
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.UniqueConstraint;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -20,15 +29,24 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "user_class", 
+					discriminatorType = DiscriminatorType.INTEGER)
+@DiscriminatorValue("0")
 public class User {
 	@Id
 	@GeneratedValue
 	int id;
+	@Column(unique=true)
+	String userName;
 	String firstName;
 	String lastName;
 	String phone;
+	@Getter(AccessLevel.NONE)
+	String password;
 	
-	public User(String firstName, String lastName, String phone) {
+	public User(String userName, String firstName, String lastName, String phone) {
+		this.userName = userName;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.phone = phone;
@@ -36,7 +54,7 @@ public class User {
 	public User(String json) {
 		JsonToUserConverter converter = new JsonToUserConverter();
 		User u = converter.convert(json);
-		this.id = u.getId();
+		this.userName = u.getUserName();
 		this.firstName = u.getFirstName();
 		this.lastName = u.getLastName();
 		this.phone = u.getPhone();
@@ -51,5 +69,11 @@ public class User {
 			}
 		}
 		return false;
+	}
+	
+	public boolean checkPassword(String password) {
+		if(this.password.equals(password)) {
+			return true;
+		}else { return false; }
 	}
 }

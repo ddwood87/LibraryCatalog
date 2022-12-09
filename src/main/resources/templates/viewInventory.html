@@ -9,13 +9,16 @@
 <h1>Inventory Items</h1>
 <table>
 	<tr>
-		<th>Item ID:</th><th>ISBN</th><th>Title</th><th>Checked Out?</th>
+		<th>Item ID:</th><th>ISBN</th><th>Title</th><th>Available?</th>
 	</tr>
 	<tr th:each="item : ${items}">
-		<th th:text="${item.id}"/>
-		<th th:text="${item.book.isbn}"/>
-		<th th:text="${item.book.title}"/>
-		<th th:text="${item.checkedOut} ? 'Yes':'No'"/>
+		<td th:text="${item.id}"/>
+		<td th:text="${item.book.isbn}"/>
+		<td th:text="${item.book.title}"/>
+		<td>
+			<span th:if="${item.checkedOut}">No</span>
+			<a th:unless="${item.checkedOut}" th:href="@{/inv/checkOutItem/{id}(id=${item.id})}">Available</a>
+		</td>
 	</tr>
 </table>
 </body>

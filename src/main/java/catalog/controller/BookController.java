@@ -23,6 +23,8 @@ import catalog.repository.BookRepository;
 public class BookController {
 	@Autowired
 	BookService bookService;
+	@Autowired
+	UserService userService;
 	
 	//All users can currently access book controller
 	public BookController() {}
@@ -39,7 +41,7 @@ public class BookController {
 		if(books.isEmpty()) {
 			return addNewBook(model);
 		}
-		model.addAttribute("activeUser", UserService.getActiveUser());
+		model.addAttribute("activeUser", userService.getActiveUser());
 		model.addAttribute("books", books);
 		return "viewBooks.html";
 	}

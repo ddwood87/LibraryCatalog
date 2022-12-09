@@ -6,7 +6,7 @@
 </head>
 <body>
 <nav th:replace="fragments/fragments :: navbar"></nav>
-<h1>${addOrEdit} Inventory Item</h1>
+<h1 th:text="${addOrEdit} + 'Inventory Item'"></h1>
 <table>
 	<tr>
 		<th><a th:href="@{/books/editBook/{isbn}(isbn=${book.isbn})}">Edit Book</a></th>
@@ -30,7 +30,7 @@
 	</tr>	
 </table>
 <form action="/inv/confirmNewItem" method="post">
-	<input type="hidden" name="isbn" value="${book.isbn}"/>
+	<input type="hidden" name="isbn" th:value="${book.isbn}"/>
 	<input type="submit" value="Add New Item"/>
 </form>
 </body>

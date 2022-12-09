@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import catalog.beans.Book;
 import catalog.beans.Borrower;
 import catalog.beans.InventoryItem;
+import catalog.beans.Librarian;
 import catalog.beans.Transaction;
 import catalog.beans.User;
 import net.bytebuddy.asm.Advice.Local;
@@ -29,6 +30,10 @@ public class InventoryController {
 	private InventoryService invService;
 	@Autowired
 	private BookService bookService;
+	@Autowired
+	private TransactionService txService;
+	@Autowired
+	private UserService userService;
 	
 	public InventoryController() {}
 	
@@ -37,10 +42,12 @@ public class InventoryController {
 	@GetMapping({"/inv/viewAllItems", "/inv"})
 	public String viewAllItems(Model model) {
 		List<InventoryItem> items = invService.findAllItems();
-
-		model.addAttribute("activeUser", UserService.getActiveUser());
-		model.addAttribute("items", items);
-		return "viewInventory.html";
+		User activeUser = userService.getActiveUser();
+		if(activeUser != null) {
+			model.addAttribute("activeUser", activeUser);
+			model.addAttribute("items", items);
+			return "viewInventory.html";
+		} else {return "redirect:/users/login";}
 	}
 	
 	@GetMapping("/inv/addNewItem/{bookISBN}")
@@ -48,44 +55,80 @@ public class InventoryController {
 		String addOrEdit = "Add";
 		Book book = bookService.findByISBN(isbn);
 		List<InventoryItem> copies = invService.findItemByISBN(isbn);
-		
-		model.addAttribute("addOrEdit", addOrEdit);
-		model.addAttribute("book", book);
-		model.addAttribute("copies", copies);
-		
-		return "invItemInfoForm";
+		User activeUser = userService.getActiveUser();
+		if(activeUser != null) {
+			model.addAttribute("activeUser", activeUser);
+			model.addAttribute("addOrEdit", addOrEdit);
+			model.addAttribute("book", book);
+			model.addAttribute("copies", copies);
+			return "invItemInfoForm";
+		} else {return "redirect:/users/login";}
 	}
 	
 	@PostMapping("/inv/confirmNewItem")
-	public String confirmNewItem(@ModelAttribute String isbn, Model model) {
+	public String confirmNewItem(@ModelAttribute("isbn") String isbn, Model model) {
 		Book book = bookService.findByISBN(isbn);
 		InventoryItem item = new InventoryItem(book);
-		User activeUser = (User)model.getAttribute("activeUser");
+		User activeUser = userService.getActiveUser();
+		if(activeUser != null && activeUser.getClass().equals(Librarian.class)){
+			Librarian l = (Librarian)activeUser;
+			Transaction tx = txService.newItem(l, item);
+			l.addTransaction(tx);
+			item.addTransaction(tx);
+			activeUser = userService.saveUser(l);
+			item = invService.saveItem(item);
+		} else {return "redirect:/users/login";}
 		
-		item = invService.saveItem(item);
-		//Send to transaction controller
-		
-		//
-		return "redirect:/tx/newItem/" + item.getId();
+		return viewAllItems(model);
 	}
 	
 	//No need to edit? add and delete only?
 	@GetMapping("/inv/editItem/{id}")
 	public String editItem(@PathVariable int id, Model model) {
 		String addOrEdit = "Edit";
-		
 		InventoryItem item = invService.findItemById(id);
+		User activeUser = userService.getActiveUser();
 		
-		model.addAttribute("addOrEdit", addOrEdit);
-		//model.addAttribute("books", books);
-		model.addAttribute("item", item);
+		if(activeUser != null){
+			model.addAttribute("activeUser", activeUser);
+			model.addAttribute("addOrEdit", addOrEdit);
+			model.addAttribute("item", item);
+		} else {return "/users/login";}
 		
 		return "invItemInfoForm";
 	}
 	@GetMapping("/inv/itemDetail/{id}")
 	public String itemDetail(@PathVariable int id, Model model) {
 		InventoryItem item = invService.findItemById(id);
-		model.addAttribute("item", item);
-		return "itemDetail.html";
+		User activeUser = userService.getActiveUser();
+		
+		if(activeUser != null){
+			model.addAttribute("item", item);
+			model.addAttribute("activeUser", userService.getActiveUser());
+			return "invItemDetail.html";
+		} else {return "redirect:/users/login";}
+	}
+	@GetMapping("/inv/checkOutItem/{id}")
+	public String checkOutItem(@PathVariable("id") int id, Model model) {
+		InventoryItem item = invService.findItemById(id);
+		User activeUser = userService.getActiveUser();
+		if(activeUser != null) {
+			if( Borrower.class.isAssignableFrom(activeUser.getClass())) {
+				Borrower b = (Borrower)activeUser;
+				Transaction tx = txService.checkout(b, item);
+				b = tx.getBorrower();
+				item = tx.getItem();
+				activeUser = userService.saveUser(b);
+				item = invService.saveItem(item);
+			}
+		} else {return "redirect:/users/login";}
+		return itemDetail(item.getId(), model);
+	}
+	@GetMapping("/inv/checkInItem/{id}")
+	public String checkInItem(@PathVariable("id") int id, Model model) {
+		Transaction tx = txService.findTransactionById(id);
+		tx = txService.checkIn(tx);
+		invService.saveItem(tx.getItem());
+		return "";
 	}
 }

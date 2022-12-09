@@ -6,12 +6,17 @@
 </head>
 <body>
 <nav th:replace="fragments/fragments :: navbar"></nav>
+<h1>Login to Library Catalog</h1>
+<div th:if="${errorMessage} != null" th:text="${errorMessage}">
+
+</div>
 <form action="/users/login" method="post">
-	<label for="id">Library ID#:</label>
-	<input type="text" name="id"/>
+	<label for="username">Library Username:</label>
+	<input type="text" name="username"/>
 	<label for="password">Password:</label>
 	<input type="text" name="password"/>
 	<input type="submit" value="Login"/>
 </form>
+<a href="/users/addNewUser">Create User Account</a>
 </body>
 </html>
