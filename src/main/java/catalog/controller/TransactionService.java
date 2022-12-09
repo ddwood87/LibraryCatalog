@@ -1,6 +1,9 @@
 package catalog.controller;
 
 import java.time.LocalDate;
+import java.util.List;
+
+import javax.persistence.EntityManagerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,6 +11,7 @@ import org.springframework.stereotype.Service;
 import catalog.beans.Book;
 import catalog.beans.Borrower;
 import catalog.beans.InventoryItem;
+import catalog.beans.Librarian;
 import catalog.beans.Transaction;
 import catalog.beans.User;
 import catalog.repository.TransactionRepository;
@@ -21,20 +25,52 @@ import catalog.repository.TransactionRepository;
 public class TransactionService {
 	@Autowired
 	TransactionRepository txRepo;
+	EntityManagerFactory emfactory;
 	public TransactionService() {
 		
 	}
 	
+	//public List<Transaction> getTransactions(){}
+	//public List<Transaction> getTransactions(TxFilter filter) {}
 	public Transaction checkout(Borrower borrower, InventoryItem item) {
 		Transaction tx = new Transaction(borrower, item);
-		return null;
+		item.setCheckedOut(true);
+		item.addTransaction(tx);
+		borrower.addTransaction(tx);
+		tx = txRepo.save(tx);
+		return tx;
 	}
 	
-	public Transaction newItem(Borrower borrower, InventoryItem item) {
+	public Transaction checkIn(Transaction tx) {
+		tx.setOpen(false);
+		tx.setReturnDate(LocalDate.now());
+		InventoryItem item = tx.getItem();
+		item.setCheckedOut(false);
+		tx = txRepo.save(tx);
+		return tx;
+	}
+	public Transaction newItem(Librarian librarian, InventoryItem item) {
 		Transaction transaction = new Transaction();
+		transaction.setBorrower(librarian);
 		transaction.setOpen(false);
 		transaction.setReturnDate(LocalDate.now());
 		transaction = txRepo.save(transaction);
 		return transaction;
+	}
+
+	/**
+	 * @param tx
+	 * @return
+	 */
+	public Transaction saveTx(Transaction tx) {
+		return txRepo.save(tx);
+	}
+
+	/**
+	 * @param id
+	 * @return
+	 */
+	public Transaction findTransactionById(int id) {
+		return txRepo.findById(id).orElse(null);
 	}
 }

@@ -1,6 +1,13 @@
 package catalog.controller;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Random;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -19,10 +26,19 @@ import catalog.repository.UserRepository;
 public class UserService {
 	@Autowired
 	private UserRepository userRepo;
-	private static User activeUser;
-	public static User getActiveUser() {
-		return activeUser;
+	@PersistenceContext
+	private EntityManager em;
+	private static int activeUser;
+	private static int newCatalogId;
+	
+	public UserService(){
+		super();
 	}
+	
+	public User getActiveUser() {
+		return findUserById(activeUser);
+	}
+
 	/**
 	 * @return
 	 */
@@ -44,8 +60,19 @@ public class UserService {
 	 * @param user
 	 * @return
 	 */
-	public User saveUser(User user) {
-		user = userRepo.save(user);
+	public User saveUser(User user) {	
+		if(userExists(user)) {
+			User u = findUserById(user.getId());
+			if(getTypeName(user).equals(getTypeName(u))){
+				user = userRepo.save(user);
+			}else {
+				deleteUser(u);
+				user = userRepo.save(user);
+			}
+		}else {
+			user = userRepo.save(user);
+		}
+		
 		return user;
 	}
 
@@ -60,26 +87,25 @@ public class UserService {
 	 * @param id
 	 * @param password
 	 */
-	public User loginUser(String id, String password) {
-		int intId = Integer.parseInt(id);
-		User user = findUserById(intId);
-		String typeName = getTypeName(user);
-		
-		if(!typeName.equals("User")) {
-			Borrower borrower = (Borrower)user;
-			if(borrower.getPassword() == password) {
-				activeUser = borrower;
-				return borrower;
-			}
-			else { return null; }
-		}
-		else { 
-			activeUser = user;
-			return user; 
-		}
-		
+	public User loginUser(String username, String password) {
+		User user = findUserByUsername(username);		
+		if(user.checkPassword(password)) {
+			activeUser = user.getId();
+		} else { return null; }
+		return user;
 	}
 	
+	/**
+	 * @param username
+	 * @return
+	 */
+	private User findUserByUsername(String username) {
+		TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE u.userName = :username", User.class);
+		query.setParameter("username", username);
+		User u = query.getSingleResult();
+		return u;
+	}
+
 	/**
 	 * @param users
 	 */
@@ -107,5 +133,11 @@ public class UserService {
 		String[] longTypeSplit = longType.split("\\.");
 		String type = longTypeSplit[longTypeSplit.length - 1];
 		return type;
+	}
+	/**
+	 * @param user
+	 */
+	public boolean userExists(User user) {
+		return userRepo.existsById(user.getId());
 	}
 }

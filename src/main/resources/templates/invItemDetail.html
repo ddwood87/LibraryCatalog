@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:insert="fragments/fragments :: head"></head>
+<head>
+<title>Library Item Detail</title>
+</head>
+<body>
+<h1>Item Details</h1>
+<table>
+	<tr>
+		<th>ISBN:</th>
+		<td th:text="${item.book.isbn}"></td>
+	</tr>
+	<tr>
+		<th>Title:</th>
+		<td th:text="${item.book.title}"></td>
+	</tr>
+	<tr>
+		<th>Category:</th>
+		<td th:text="${item.book.category}"></td>
+	</tr>
+	<tr th:each="author : ${item.book.authors}">
+		<th th:if="${author} == ${item.book.authors[0]}">Authors:</th>
+		<th th:unless="${author} == ${item.book.authors[0]}"/>
+		<td th:text="${author}"></td>
+	</tr>	
+	<tr>
+		<th>Available?</th>
+		<td>
+			<span th:if="${item.checkedOut}">No</span>
+			<a th:unless="${item.checkedOut}" th:href="@{/inv/checkOutItem/{id}(id=${item.id})}">Available</a>
+		</td>
+	</tr>
+</table>
+<table>
+	<tr>
+		<th>Transaction #</th><th>ISBN</th><th>Checked Out</th><th>Due Back</th><th>Returned</th>
+	</tr>
+	<tr th:each="tx : ${item.transactions}">
+		<td th:text="${tx.id}"/>
+		<td th:text="${tx.item.book.isbn}"/>
+		<td th:text="${tx.borrowDate}"/>
+		<td th:text="${tx.dueDate}"/>
+		<td><div th:if="!${tx.open}" th:text="${tx.returnDate}"></div>
+			
+		</td>
+	</tr>
+</table>
+</body>
+</html>

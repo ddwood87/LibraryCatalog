@@ -17,7 +17,9 @@
 		<td th:text="${user.firstName}"/>
 		<td th:text="${user.lastName}"/>
 		<td th:text="${user.phone}"/>
+		<td><a th:href="@{/users/userDetail/{id}(id=${user.id})}">Detail</a></td>
 	</tr>
 </table>
+<a href="/users/addNewUser">Create User Account</a>
 </body>
 </html>

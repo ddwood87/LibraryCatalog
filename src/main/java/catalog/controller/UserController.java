@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import catalog.beans.Borrower;
+import catalog.beans.Librarian;
 import catalog.beans.User;
 import catalog.repository.UserRepository;
 
@@ -45,6 +48,11 @@ public class UserController {
 			String type = userService.getTypeName(u);
 			userClasses.put(u.getId(), type);
 		}
+		User activeUser = userService.getActiveUser();
+		if(activeUser == null) {
+			return login(model);
+		}
+		model.addAttribute("activeUser", activeUser);
 		model.addAttribute("users", users);
 		model.addAttribute("userClasses", userClasses);
 		return "viewUsers.html";
@@ -57,6 +65,8 @@ public class UserController {
 		}else if(addOrEdit == "Edit") {
 			
 		}
+
+		model.addAttribute("activeUser", userService.getActiveUser());
 		return "userInfoForm.html";
 	}
 	//create
@@ -70,53 +80,96 @@ public class UserController {
 	//edit
 	@GetMapping("/users/editUser/{id}")
 	public String editUser(@PathVariable("id") int id, Model model) {
-		model.addAttribute("addOrEdit", "Edit");
 		User user = userService.findUserById(id);
 		if(user != null) {
 			model.addAttribute("user", user);
 		}
+		String userClass = userService.getTypeName(user);
+		model.addAttribute("userClass", userClass);
+		model.addAttribute("addOrEdit", "Edit");
 		return userInput(model);
 	}
 	
 	@PostMapping("/users/updateUser")
-	public String updateUser(@ModelAttribute User user, Model model) {
-		
+	public String updateUser(@ModelAttribute User user, @RequestParam("userClass") String userClass, Model model) {
+		//Check for existing user.
+		if(userService.userExists(user)) {
+			//Check for class change
+			if(!userService.getTypeName(user).equals(userClass)) {
+				//Create selected class and transfer
+				if(userClass.equals("Borrower")) {
+					user = new Borrower(user);
+				}else if(userClass.equals("Librarian") || userClass.equals("Admin")) {
+					user = new Librarian(user);
+					if(userClass.equals("Admin")) {
+						((Librarian)user).setAdmin(true);
+					}
+				}
+			}
+		}else {
+			if(userClass.equals("Borrower")) {
+				Borrower b = new Borrower(user);
+				user = b;
+			}else if(userClass.equals("Librarian") || userClass.equals("Admin")) {
+				Librarian l = new Librarian(user);
+				if(userClass.equals("Admin")) {
+					l.setAdmin(true);
+				}
+				user = l;
+			}
+		}
 		user = userService.saveUser(user);
 		model.addAttribute("user", user);
 		
-		return userDetail(user.getId(), model);
+		return login(model);
 	}
 	
 	//delete
 	@GetMapping("/users/deleteUser/{id}")
 	public String deleteUser(@PathVariable("id") int id, Model model) {
 		//Check for Librarian user class w/ isAdmin true.
-		
-		//Redirect to confirm delete?
-		User user = userService.findUserById(id);
-		userService.deleteUser(user);
+		User activeUser = userService.getActiveUser();
+		if(userService.getTypeName(activeUser).equals("Librarian") && ((Librarian)activeUser).isAdmin()) {
+			//Redirect to confirm delete?
+			User user = userService.findUserById(id);
+			userService.deleteUser(user);
+		}
+		else {
+			//message user about admin access
+		}
 		return viewAllUsers(model);
 	}
 	
 	@GetMapping("/users/userDetail/{id}")
 	public String userDetail(@PathVariable int id, Model model) {
 		User u = userService.findUserById(id);
-		Class<? extends User> classType = u.getClass();
-		model.addAttribute("userClass", classType.getTypeName());
+		String userClass = userService.getTypeName(u);
+		User activeUser = userService.getActiveUser();
+		
+		if(u.equals(activeUser) || (userService.getTypeName(activeUser).equals("Librarian") && ((Librarian)activeUser).isAdmin())) {
+			model.addAttribute("editor", true);
+		} else {
+			model.addAttribute("editor", false);
+		}
+		model.addAttribute("userClass", userClass);
 		model.addAttribute("user", u);
+		model.addAttribute("activeUser", activeUser);
 		return "userDetail.html";
 	}
-	@GetMapping("/users/login")
+	@GetMapping({"/users/login", "/index"})
 	public String login(Model model) {
 		return "login.html";
 	}
 	@PostMapping("/users/login")
 	public String login(
-			@ModelAttribute("id")String id, 
+			@ModelAttribute("username")String username, 
 			@ModelAttribute("password")String password, 
 			Model model) {
-		User user = userService.loginUser(id, password);
-		model.addAttribute("activeUser", UserService.getActiveUser());
+		User user = userService.loginUser(username, password);
+		if(user == null) {
+			model.addAttribute("errorMessage", "Phone # or password is incorrect.");
+			return login(model);
+		}
 		return userDetail(user.getId(), model);
 	}
 }

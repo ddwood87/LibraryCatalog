@@ -8,8 +8,8 @@
 <nav th:replace="fragments/fragments :: navbar"></nav>
 <h1>User Details</h1>
 <table>
-	<tr>
-		<th><a th:href="@{/users/editUser/{id}(id=${user.id})}">Edit User</a></th>
+	<tr th:if="${editor}">
+		<th><a th:href="@{/users/editUser/{id}(id=${user.id})}">Edit</a></th>
 	</tr>
 	<tr>
 		<th>Library ID:</th>
@@ -27,12 +27,36 @@
 		<th>Phone No.:</th>
 		<td th:text="${user.phone}"></td>
 	</tr>	
+	<tr th:if="${userClass} == 'Librarian'">
+		<th>Salary</th>
+		<td th:if="${user.salary}"></td>
+	</tr>
+	<tr th:if="${userClass} == 'Librarian'">
+		<th>Hours</th>
+		<td th:if="${user.hours}"></td>
+	</tr>
+	<tr>
+		<th>User Type:</th>
+		<td th:text="${userClass}"></td>
+	</tr>
 </table>
-	<div th:if="${userClass} == 'catalog.beans.Borrower' OR ${userClass} == 'catalog.beans.Librarian'">
-		<button onclick="/users/viewBorrowerBag">View Your Books</button>
-	</div>
-	<div th:if="${userClass} == 'Librarian'">
-		<!-- Librarian tasks -->
+	<div th:if="${userClass} == 'Borrower' OR ${userClass} == 'Librarian'">
+		<table>
+			<tr>
+				<th>Transaction #</th><th>Item #</th><th>ISBN</th><th>Checked Out</th><th>Due Back</th><th>Returned</th>
+			</tr>
+			<tr th:each="tx : ${user.transactions}">
+				<td th:text="${tx.id}"/>
+				<td th:text="${tx.item.id}"/>
+				<td th:text="${tx.item.book.isbn}"/>
+				<td th:text="${tx.borrowDate}"/>
+				<td th:text="${tx.dueDate}"/>
+				<td>
+					<span th:if="!${tx.open}" th:text="${tx.returnDate}"></span>
+					<a th:unless="!${tx.open}" th:href="@{/inv/checkInItem/{id}(id=${tx.id})}">Check In</a>
+				</td>
+			</tr>
+		</table>
 	</div>
 </body>
 </html>

@@ -26,11 +26,11 @@ import lombok.NoArgsConstructor;
 public class Transaction {
 	
 	public Transaction(Borrower borrower, InventoryItem item) {
-		open = true;
+		this.open = true;
 		this.item = item;
 		this.borrower = borrower;
-		borrowDate = LocalDate.now();
-		dueDate = borrowDate.plusDays(DAYS_TO_BORROW);
+		this.borrowDate = LocalDate.now();
+		this.dueDate = borrowDate.plusDays(DAYS_TO_BORROW);
 	}
 	
 	@Id
