@@ -1,6 +1,5 @@
 package catalog.controller;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,6 @@ import catalog.beans.InventoryItem;
 import catalog.beans.Librarian;
 import catalog.beans.Transaction;
 import catalog.beans.User;
-import net.bytebuddy.asm.Advice.Local;
 
 /**
  * @author dominicwood - ddwood2@dmacc.edu
@@ -101,8 +99,12 @@ public class InventoryController {
 	public String itemDetail(@PathVariable int id, Model model) {
 		InventoryItem item = invService.findItemById(id);
 		User activeUser = userService.getActiveUser();
-		
+		boolean hasHistory = false;
 		if(activeUser != null){
+			if(!item.getTransactions().isEmpty()) {
+				hasHistory = true;
+			}
+			model.addAttribute("hasHistory", hasHistory);
 			model.addAttribute("item", item);
 			model.addAttribute("activeUser", userService.getActiveUser());
 			return "invItemDetail.html";
@@ -114,12 +116,16 @@ public class InventoryController {
 		User activeUser = userService.getActiveUser();
 		if(activeUser != null) {
 			if( Borrower.class.isAssignableFrom(activeUser.getClass())) {
-				Borrower b = (Borrower)activeUser;
-				Transaction tx = txService.checkout(b, item);
-				b = tx.getBorrower();
-				item = tx.getItem();
-				activeUser = userService.saveUser(b);
-				item = invService.saveItem(item);
+				if(item.isCheckedOut()) {
+					return itemDetail(item.getId(), model);
+				}else {						
+					Borrower b = (Borrower)activeUser;
+					Transaction tx = txService.checkout(b, item);
+					b = tx.getBorrower();
+					item = tx.getItem();
+					activeUser = userService.saveUser(b);
+					item = invService.saveItem(item);
+				}
 			}
 		} else {return "redirect:/users/login";}
 		return itemDetail(item.getId(), model);
@@ -128,7 +134,7 @@ public class InventoryController {
 	public String checkInItem(@PathVariable("id") int id, Model model) {
 		Transaction tx = txService.findTransactionById(id);
 		tx = txService.checkIn(tx);
-		invService.saveItem(tx.getItem());
-		return "";
+		InventoryItem item = invService.saveItem(tx.getItem());
+		return itemDetail(item.getId(), model);
 	}
 }

@@ -27,10 +27,11 @@ public class Book {
 	List<String> authors;
 	String category;
 	public final static List<String> CATEGORIES = new ArrayList<String>() {
+		private static final long serialVersionUID = 1L;
 		{	
 			add("Adventure"); 
 			add("Sci-Fi");
-			add("Education");  //Add more categories.
+			add("Education");
 			add("Biography");
 			add("Other");
 		}

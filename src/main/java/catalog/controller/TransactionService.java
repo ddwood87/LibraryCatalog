@@ -1,19 +1,15 @@
 package catalog.controller;
 
 import java.time.LocalDate;
-import java.util.List;
-
 import javax.persistence.EntityManagerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import catalog.beans.Book;
 import catalog.beans.Borrower;
 import catalog.beans.InventoryItem;
 import catalog.beans.Librarian;
 import catalog.beans.Transaction;
-import catalog.beans.User;
 import catalog.repository.TransactionRepository;
 
 /**
@@ -58,18 +54,10 @@ public class TransactionService {
 		return transaction;
 	}
 
-	/**
-	 * @param tx
-	 * @return
-	 */
 	public Transaction saveTx(Transaction tx) {
 		return txRepo.save(tx);
 	}
 
-	/**
-	 * @param id
-	 * @return
-	 */
 	public Transaction findTransactionById(int id) {
 		return txRepo.findById(id).orElse(null);
 	}

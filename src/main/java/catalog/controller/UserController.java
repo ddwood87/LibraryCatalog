@@ -4,7 +4,6 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.hibernate.mapping.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,12 +12,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import catalog.beans.Borrower;
 import catalog.beans.Librarian;
 import catalog.beans.User;
-import catalog.repository.UserRepository;
 
 /**
  * @author dominicwood - ddwood2@dmacc.edu
@@ -46,6 +42,9 @@ public class UserController {
 		Dictionary<Integer, String> userClasses = new Hashtable<Integer, String>();
 		for(User u : users) {
 			String type = userService.getTypeName(u);
+			if(type.equals("Librarian") && ((Librarian)u).isAdmin()) {
+				type = "Admin";
+			}
 			userClasses.put(u.getId(), type);
 		}
 		User activeUser = userService.getActiveUser();
@@ -57,7 +56,8 @@ public class UserController {
 		model.addAttribute("userClasses", userClasses);
 		return "viewUsers.html";
 	}
-	//@GetMapping("/users/userInput") Not reachable by URL
+	
+	//Not reachable by URL
 	public String userInput(Model model) {
 		String addOrEdit = (String)model.getAttribute("addOrEdit");
 		if(addOrEdit == "Add") {	
@@ -69,7 +69,7 @@ public class UserController {
 		model.addAttribute("activeUser", userService.getActiveUser());
 		return "userInfoForm.html";
 	}
-	//create
+	
 	@GetMapping({"/users/addNewUser"})	
 	public String addNewUser(Model model) {
 		User user = new User();
@@ -77,7 +77,7 @@ public class UserController {
 		model.addAttribute("addOrEdit", "Add");
 		return userInput(model);
 	}
-	//edit
+	
 	@GetMapping("/users/editUser/{id}")
 	public String editUser(@PathVariable("id") int id, Model model) {
 		User user = userService.findUserById(id);
@@ -124,18 +124,21 @@ public class UserController {
 		return login(model);
 	}
 	
-	//delete
 	@GetMapping("/users/deleteUser/{id}")
 	public String deleteUser(@PathVariable("id") int id, Model model) {
 		//Check for Librarian user class w/ isAdmin true.
 		User activeUser = userService.getActiveUser();
-		if(userService.getTypeName(activeUser).equals("Librarian") && ((Librarian)activeUser).isAdmin()) {
-			//Redirect to confirm delete?
-			User user = userService.findUserById(id);
-			userService.deleteUser(user);
-		}
-		else {
-			//message user about admin access
+		if(activeUser == null) {
+			return login(model);
+		}else {
+			if(userService.getTypeName(activeUser).equals("Librarian") && ((Librarian)activeUser).isAdmin()) {
+				//Redirect to confirm delete?
+				User user = userService.findUserById(id);
+				userService.deleteUser(user);
+			}
+			else {
+				//message user about admin access
+			}
 		}
 		return viewAllUsers(model);
 	}
@@ -145,21 +148,45 @@ public class UserController {
 		User u = userService.findUserById(id);
 		String userClass = userService.getTypeName(u);
 		User activeUser = userService.getActiveUser();
-		
-		if(u.equals(activeUser) || (userService.getTypeName(activeUser).equals("Librarian") && ((Librarian)activeUser).isAdmin())) {
-			model.addAttribute("editor", true);
-		} else {
-			model.addAttribute("editor", false);
+		boolean hasHistory = false;
+		if(activeUser == null) {
+			return login(model);
+		}else {
+			if(u.equals(activeUser) || (userService.getTypeName(activeUser).equals("Librarian") && ((Librarian)activeUser).isAdmin())) {
+				model.addAttribute("editor", true);
+				if(u.equals(activeUser)) {
+					model.addAttribute("logout", true);
+				}
+			} else {
+				model.addAttribute("editor", false);
+				model.addAttribute("logout", false);
+			}
+		}
+		switch(userClass) {
+			case "Librarian":
+				if(((Librarian)u).isAdmin()) {
+					userClass = "Admin";
+				}
+			case "Borrower":
+				if(!((Borrower)u).getTransactions().isEmpty()) {
+					hasHistory = true;
+				}				
+			case "User":
+			default:
+				break;
 		}
 		model.addAttribute("userClass", userClass);
 		model.addAttribute("user", u);
 		model.addAttribute("activeUser", activeUser);
+		model.addAttribute("hasHistory", hasHistory);
 		return "userDetail.html";
 	}
+	
 	@GetMapping({"/users/login", "/index"})
 	public String login(Model model) {
 		return "login.html";
 	}
+	
 	@PostMapping("/users/login")
 	public String login(
 			@ModelAttribute("username")String username, 
@@ -171,5 +198,11 @@ public class UserController {
 			return login(model);
 		}
 		return userDetail(user.getId(), model);
+	}
+	
+	@GetMapping("/users/logout")
+	public String logout(Model model) {
+		userService.logoutActiveUser();
+		return login(model);
 	}
 }

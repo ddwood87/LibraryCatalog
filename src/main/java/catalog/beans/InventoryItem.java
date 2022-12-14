@@ -8,9 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.Mapping;
+import javax.persistence.OrderBy;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,6 +32,7 @@ public class InventoryItem {
 	Book book;
 	boolean checkedOut;
 	@OneToMany
+	@OrderBy("id DESC")
 	List<Transaction> transactions;
 	
 	public InventoryItem(Book book) {
@@ -44,6 +43,6 @@ public class InventoryItem {
 		if(transactions == null) {
 			transactions = new ArrayList<Transaction>();
 		}
-		transactions.add(transaction);
+		transactions.add(0, transaction);
 	}
 }

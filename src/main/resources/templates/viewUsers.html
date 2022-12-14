@@ -8,12 +8,13 @@
 <nav th:replace="fragments/fragments :: navbar"></nav>
 <table>
 	<tr>
-		<th>Class</th><th>Library ID#</th><th>First Name</th><th>Last Name</th><th>Phone</th>
+		<th>Class</th><th>Library ID#</th><th>User Name</th><th>First Name</th><th>Last Name</th><th>Phone</th>
 	</tr>
 	<tr th:each="user : ${users}">
 		
 		<td th:with="userId=${user.id}" th:text="${userClasses.get(userId)}"/>
 		<td th:text="${user.id}"/>
+		<td th:text="${user.userName}"/>
 		<td th:text="${user.firstName}"/>
 		<td th:text="${user.lastName}"/>
 		<td th:text="${user.phone}"/>
