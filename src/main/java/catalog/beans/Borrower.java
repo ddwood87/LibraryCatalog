@@ -6,10 +6,8 @@ import java.util.List;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,6 +25,7 @@ import lombok.Setter;
 public class Borrower extends User {
 	
 	@OneToMany(mappedBy="borrower")
+	@OrderBy("id DESC")
 	List<Transaction> transactions;
 	int lateDays;
 	
@@ -58,6 +57,6 @@ public class Borrower extends User {
 		if(transactions == null) {
 			transactions = new ArrayList<Transaction>();
 		}
-		transactions.add(transaction);
+		transactions.add(0, transaction);
 	}
 }

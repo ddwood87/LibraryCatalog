@@ -14,7 +14,17 @@ nav ul li{
 	border: 2px solid black;
 	border-radius: 5px;
 }
+nav ul li.username{
+	background-color: #557755;
+}
 nav ul li a {
 	text-decoration: none;
 	color: white;	
+}
+table{
+	border: 2px solid #774411;
+}
+table th, td{
+	border: 1px solid #774411;
+	padding: 3px;
 }

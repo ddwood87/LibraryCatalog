@@ -27,10 +27,6 @@ public class BookService {
 		return bookRepo.findAll();
 	}
 
-	/**
-	 * @param isbn
-	 * @return
-	 */
 	public Book findByISBN(String isbn) {
 		return bookRepo.findById(isbn).orElse(null);
 	}
@@ -39,9 +35,6 @@ public class BookService {
 		return bookRepo.save(book);
 	}
 
-	/**
-	 * @param isbn
-	 */
 	public void deleteByISBN(String isbn) {
 		bookRepo.deleteById(isbn);
 	}

@@ -10,7 +10,7 @@
 <table>
 	<tr th:if="${editor}">
 		<th><a th:href="@{/users/editUser/{id}(id=${user.id})}">Edit</a></th>
-	</tr>
+		<th th:if="${logout}"><a href="/users/logout">Logout</a></th>		
 	<tr>
 		<th>Library ID:</th>
 		<td th:text="${user.id}"></td>
@@ -40,7 +40,8 @@
 		<td th:text="${userClass}"></td>
 	</tr>
 </table>
-	<div th:if="${userClass} == 'Borrower' OR ${userClass} == 'Librarian'">
+	<div th:if="${hasHistory}">
+	<h1>Borrow History</h1>
 		<table>
 			<tr>
 				<th>Transaction #</th><th>Item #</th><th>ISBN</th><th>Checked Out</th><th>Due Back</th><th>Returned</th>

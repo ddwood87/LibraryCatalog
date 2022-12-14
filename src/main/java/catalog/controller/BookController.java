@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import catalog.beans.Book;
-import catalog.beans.User;
-import catalog.repository.BookRepository;
 
 /**
  * @author dominicwood - ddwood2@dmacc.edu
@@ -25,8 +23,7 @@ public class BookController {
 	BookService bookService;
 	@Autowired
 	UserService userService;
-	
-	//All users can currently access book controller
+
 	public BookController() {}
 	public BookController(BookService service) {
 		bookService = service;
