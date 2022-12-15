@@ -182,7 +182,7 @@ public class UserController {
 		return "userDetail.html";
 	}
 	
-	@GetMapping({"/users/login", "/index"})
+	@GetMapping({"/users/login", "/index", "", "/"})
 	public String login(Model model) {
 		return "login.html";
 	}
@@ -194,7 +194,7 @@ public class UserController {
 			Model model) {
 		User user = userService.loginUser(username, password);
 		if(user == null) {
-			model.addAttribute("errorMessage", "Phone # or password is incorrect.");
+			model.addAttribute("errorMessage", "Username or password is incorrect.");
 			return login(model);
 		}
 		return userDetail(user.getId(), model);

@@ -70,11 +70,11 @@ public class InventoryController {
 		User activeUser = userService.getActiveUser();
 		if(activeUser != null && activeUser.getClass().equals(Librarian.class)){
 			Librarian l = (Librarian)activeUser;
+			item = invService.saveItem(item);
 			Transaction tx = txService.newItem(l, item);
 			l.addTransaction(tx);
 			item.addTransaction(tx);
 			activeUser = userService.saveUser(l);
-			item = invService.saveItem(item);
 		} else {return "redirect:/users/login";}
 		
 		return viewAllItems(model);
