@@ -37,14 +37,16 @@
 		</td>
 	</tr>
 </table>
-<table th:if="${hasHistory}">
+<div th:if="${hasHistory}">
+<h1>Borrow History</h1>
+<table>
 	<tr>
 		<th>Transaction #</th><th>Borrower</th><th>ISBN</th><th>Checked Out</th><th>Due Back</th><th>Returned</th>
 	</tr>
 	<tr th:each="tx : ${item.transactions}">
 		<td th:text="${tx.id}"/>
 		<td th:text="${tx.borrower.userName}"/>
-		<td th:text="${tx.item.book.isbn}"/>
+		<td th:text="${item.book.isbn}"/>
 		<td th:text="${tx.borrowDate}"/>
 		<td th:text="${tx.dueDate}"/>
 		<td>
@@ -53,5 +55,6 @@
 		</td>
 	</tr>
 </table>
+</div>
 </body>
 </html>

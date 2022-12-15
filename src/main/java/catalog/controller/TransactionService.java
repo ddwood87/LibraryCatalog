@@ -50,6 +50,7 @@ public class TransactionService {
 		transaction.setBorrower(librarian);
 		transaction.setOpen(false);
 		transaction.setReturnDate(LocalDate.now());
+		transaction.setItem(item);
 		transaction = txRepo.save(transaction);
 		return transaction;
 	}

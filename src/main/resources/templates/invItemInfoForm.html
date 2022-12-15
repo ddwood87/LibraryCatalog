@@ -6,7 +6,7 @@
 </head>
 <body>
 <nav th:replace="fragments/fragments :: navbar"></nav>
-<h1 th:text="${addOrEdit} + 'Inventory Item'"></h1>
+<h1 th:text="${addOrEdit} + ' Inventory Item'"></h1>
 <table>
 	<tr>
 		<th><a th:href="@{/books/editBook/{isbn}(isbn=${book.isbn})}">Edit Book</a></th>
